@@ -80,29 +80,51 @@ bool Player::playMove(string word, coord start, char dir){
 
 bool Player::changeHand(string word, coord start, char dir){
     bool found = false;
+    int dY, dX, x, y;
+    char boardTile;
+    y = start.row;
+    x = start.col;
+    if (dir == 'V') {
+        dY = 1;
+        dX = 0;
+    } else {
+        dY = 0;
+        dX = 1;
+    }
+
     for(int i = 0; i < word.length(); i++){
-        if(((g ->gBoard(start.row, start.col+i) == empty) && dir == 'H') || ((g -> gBoard(start.row + i, start.col) == empty) && dir == 'V')){
+        cout << "Looking at " << word[i] << endl;
+        boardTile = g->gBoard(x, y);
+
+        if (word[i] == boardTile) {
+            cout << "Letter " << word[i] << " is already present on board" << endl;
+        } else {
+            cout << word[i] << " is an addition to the board, remove from hand" << endl;
             for(int j = 0; j < 7; j++){
                 if(hand[j] == word[i]){
                     hand[i] = g->drawBag();
+                    cout << "Replacing letter " << hand[i] << " in hand\n";
                     found = true;
                     break;
                 }
             }
             if(!found){
+                cout << "Letter " << boardTile << " was not found in hand, therefore it must be a ~" << endl;
                 for(int k = 0; k < 7; k++){
                     if(hand[k] == '~'){
                         hand[k] = g->drawBag();
+                        cout << "Replacing letter " << hand[k] << " in hand\n";
                         found = true;
                         break;
                     }
                 }
             }
-            if(!found){
-                cout << word[i] << " not found" << endl;
-                return false;
-            }
-        }        
+
+        }
+
+        x += dX;
+        y += dY;
+
     }
     return true;
 }
