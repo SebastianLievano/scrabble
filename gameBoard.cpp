@@ -117,64 +117,62 @@ bool gameBoard::checkWord(string word){
     return true;
 }
 
-
 int gameBoard::checkOffshoots(string word, coord start, char dir){
+    int row = start.row, col = start.col, score = 0, val;
+    for(int i = 0; i < word.length(); ++i){
+        if(dir == 'H' && board[row][col+i].letter == empty) val = checkEachOffshoot(word[i], row, col + i, dir);
+        else if(dir == 'V' && board[row+i][col].letter == empty) val = checkEachOffshoot(word[i], row+i, col, dir);
+        if(val) score += val;
+        else if(val == -1) return -1;
+    }
+    return score;
+}
+
+
+int gameBoard::checkEachOffshoot(char letter, int row, int col, char dir){
     //for convenience:
-    int row = start.row, col = start.col, i = 1, j = 1, score = 0;
+    int i = 1, j = 1, score = 0;
+    coord oStart(row, col);
     string offshoot= "";
     switch(dir){
         case 'H':{
-            for(int k = 0; k < word.length(); k++){
-                i = 1;
-                j = 1;
-                if(board[row][col + k].letter == empty){
-                    //Above
-                    while(board[row - j][col + k].letter != empty && (row - j) >= 0){
-                        if(j == 1) offshoot = word[k];
-                        offshoot = board[row - j][col + k].letter + offshoot;
-                        j++;
-                    }
-                    if(j == 1) j = 0; //If square above was empty, setting j to 0
-                    //Below
-                    while(board[row + i][col + k].letter != empty && (row + i) < 15){
-                        if(j == 0 && i == 1) offshoot = word[k];
-                        offshoot = offshoot + board[row + i][col + k].letter;
-                        i++;
-                    }
-                }
+            //Above
+            while(board[row - j][col].letter != empty && (row - j) >= 0){
+                if(j == 1) offshoot = letter;
+                offshoot = board[row - j][col].letter + offshoot;
+                ++j;
             }
-            if(offshoot != "" && !checkWord(offshoot)){
-                cout << offshoot << " is invalid" << endl;
-                return -1;
+            --j;
+            oStart.row -= j;
+            //Below
+            while(board[row + i][col].letter != empty && (row + i) < 15){
+                if( j == 0 && i == 1) offshoot = letter;
+                offshoot = offshoot + board[row + i][col].letter;
+                ++i;
             }
-            coord oStart(row - j, col);
-            score += calcScore(offshoot, oStart, 'V');
         }
         case 'V':{
-            for(int k = 0; k < word.length(); k++){
-                i = 1;
-                j = 1;
-                if(board[row + k][col].letter == empty){
-                    //left
-                    while(board[row + k][col - j].letter != empty && (col - k) >= 0){
-                        if(j == 1) offshoot = word[k];                        
-                        offshoot = board[row + k][col - j].letter + offshoot;
-                        j++;
-                    }
-                    if(j == 1) j = 0;
-                    //Below
-                    while(board[row + k][col + i].letter != empty && (col + i) < 15){
-                        if(j == 0 && i == 1) offshoot = word[k];                        
-                        offshoot = offshoot + board[row + k][col + i].letter;
-                        i++;
-                    }
-                }
+            while(board[row][col-j].letter != empty && (col - j) >= 0){
+                if(j == 1) offshoot = letter;
+                offshoot = board[row][col-j].letter + offshoot;
+                ++j;
             }
-            if(offshoot != "" && !checkWord(offshoot)) return -1;
-            coord oStart(row , col - j);
-            score += calcScore(offshoot, oStart, 'H');
+            --j;
+            oStart.col -= j;
+            while(board[row][col + i].letter != empty && (col + i) < 15){
+                if(j == 0 && i == 1) offshoot = letter;                        
+                offshoot = offshoot + board[row][col + i].letter;
+                ++i;
+            }
         }
     }
+    if(offshoot == "") return 0;
+    if(!checkWord(offshoot)){
+        cout << offshoot << " is an invalid word" << endl;
+        return -1;
+    }
+    score = calcScore(offshoot, oStart, dir);
+    cout << offshoot << "is valid and worth " << score << "points" << endl;
     return score;
 }
 

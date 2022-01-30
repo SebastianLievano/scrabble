@@ -57,6 +57,7 @@ class gameBoard{
         string lettersNeeded(string word, coord start, char dir); //Checks if player can play word w given letters
         bool lettersAvail(string hand, string word, coord start, char dir);
         bool checkWord(string word); //Checks if word is in Dictionary
+        int checkEachOffshoot(char letter, int row, int col, char dir);
         int checkOffshoots(string word, coord start, char dir); 
         int validWord(string word, string hand, coord start, char dir); 
         void playMove(string word, coord start, char dir);
