@@ -80,7 +80,8 @@ bool Player::playMove(string word, coord start, char dir){
 
 bool Player::changeHand(string word, coord start, char dir){
     bool found = false;
-    int dY, dX, x, y;
+    int dY, dX, x, y, wildCardLoc = -1;
+    vector<int> changedIndexes;
     char boardTile;
     y = start.row;
     x = start.col;
@@ -91,40 +92,30 @@ bool Player::changeHand(string word, coord start, char dir){
         dY = 0;
         dX = 1;
     }
-
     for(int i = 0; i < word.length(); i++){
-        cout << "Looking at " << word[i] << endl;
-        boardTile = g->gBoard(x, y);
-
-        if (word[i] == boardTile) {
-            cout << "Letter " << word[i] << " is already present on board" << endl;
-        } else {
-            cout << word[i] << " is an addition to the board, remove from hand" << endl;
-            for(int j = 0; j < 7; j++){
-                if(hand[j] == word[i]){
-                    hand[i] = g->drawBag();
-                    cout << "Replacing letter " << hand[i] << " in hand\n";
-                    found = true;
-                    break;
-                }
+        if(g->gBoard(x,y) != empty) continue;
+        for(int j = 0; j < 7; j++){
+            found = false;
+            if(hand[j] == word[i]){
+                changedIndexes.push_back(j);
+                found = true;
+                break;
             }
-            if(!found){
-                cout << "Letter " << boardTile << " was not found in hand, therefore it must be a ~" << endl;
-                for(int k = 0; k < 7; k++){
-                    if(hand[k] == '~'){
-                        hand[k] = g->drawBag();
-                        cout << "Replacing letter " << hand[k] << " in hand\n";
-                        found = true;
-                        break;
-                    }
-                }
-            }
-
+            if(hand[j] == '~') wildCardLoc = j;
         }
-
+        if(!found && wildCardLoc != -1){
+            changedIndexes.push_back(wildCardLoc);
+            wildCardLoc = -1;
+            cout << "Using wildcard tile for letter " << word[i] << endl;
+        }
+        else if(!found){
+            return false;
+        }
         x += dX;
         y += dY;
-
+    }
+    for(int i = 0; i < changedIndexes.size(); ++i){
+        hand[changedIndexes[i]] = g-> drawBag();
     }
     return true;
 }
