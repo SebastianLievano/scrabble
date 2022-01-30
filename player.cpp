@@ -85,6 +85,7 @@ bool Player::changeHand(string word, coord start, char dir){
             for(int j = 0; j < 7; j++){
                 if(hand[j] == word[i]){
                     hand[i] = g->drawBag();
+                    cout << "Replacing letter " << hand[k] " in hand\n";
                     found = true;
                     break;
                 }
@@ -93,6 +94,7 @@ bool Player::changeHand(string word, coord start, char dir){
                 for(int k = 0; k < 7; k++){
                     if(hand[k] == '~'){
                         hand[k] = g->drawBag();
+                        cout << "Replacing letter " << hand[k] " in hand\n";
                         found = true;
                         break;
                     }
