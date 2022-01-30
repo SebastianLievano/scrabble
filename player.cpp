@@ -63,6 +63,7 @@ bool Player::playMove(string word, coord start, char dir){
         cando = changeHand(word, start, dir);
         if(cando){
             g->playMove(word, start, dir);
+            g->printBoard();
             score += doableMove;
             cout << "Word " << word << " was valid. You gained " << doableMove << " pts" << endl;
             cout << "Your new hand is ";
@@ -80,20 +81,21 @@ bool Player::playMove(string word, coord start, char dir){
 
 bool Player::changeHand(string word, coord start, char dir){
     bool found = false;
-    int dY, dX, x, y, wildCardLoc = -1;
+    int dRow, dCol, row = start.row, col = start.col, wildCardLoc = -1;
     vector<int> changedIndexes;
     char boardTile;
-    y = start.row;
-    x = start.col;
     if (dir == 'V') {
-        dY = 1;
-        dX = 0;
+        dRow = 1;
+        dCol = 0;
     } else {
-        dY = 0;
-        dX = 1;
+        dRow = 0;
+        dCol = 1;
     }
     for(int i = 0; i < word.length(); i++){
-        if(g->gBoard(x,y) != empty) continue;
+        if(g->gBoard(row, col) != empty){
+            cout << "Letter " << word[i] << "already placed" << endl;
+            i++;
+        }
         for(int j = 0; j < 7; j++){
             found = false;
             if(hand[j] == word[i]){
@@ -111,11 +113,13 @@ bool Player::changeHand(string word, coord start, char dir){
         else if(!found){
             return false;
         }
-        x += dX;
-        y += dY;
+        row += dRow;
+        col += dCol;
     }
     for(int i = 0; i < changedIndexes.size(); ++i){
+        cout << "Replacing letter " << hand[changedIndexes[i]];
         hand[changedIndexes[i]] = g-> drawBag();
+        cout << " with " << hand[changedIndexes[i]] << endl;
     }
     return true;
 }
