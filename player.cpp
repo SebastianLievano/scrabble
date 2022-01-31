@@ -83,6 +83,8 @@ bool Player::changeHand(string word, coord start, char dir){
     bool found = false;
     int dRow, dCol, row = start.row, col = start.col, wildCardLoc = -1;
     vector<int> changedIndexes;
+    char letter;
+
     char boardTile;
     if (dir == 'V') {
         dRow = 1;
@@ -91,6 +93,81 @@ bool Player::changeHand(string word, coord start, char dir){
         dRow = 0;
         dCol = 1;
     }
+
+    vector<int> checkedIndexes;
+
+    bool letterFound, blankFound;
+    // Check if the player has all the letters needed
+    for (int i = 0; i < word.length(); i++) {
+        cout << "Checking for letter " << word[i] << endl;
+        letterFound = false;
+        for (int j = 0; j < 7; j++) {
+            if(find(checkedIndexes.begin(), checkedIndexes.end(), j) != checkedIndexes.end()) {
+                cout << "Hand index " << hand[j] << " has already been registered\n";
+            } else {
+                if (hand[j] == word[i]) {
+                    cout << "Found " << word[i] << " in hand\n";
+                    checkedIndexes.push_back(j);
+                    letterFound = true;
+                    cout << letterFound << endl;
+                    break;
+                }
+            }
+        }
+        if (!letterFound) {
+            cout << "Checking if " << word[i] << " is associated with a blank\n";
+            blankFound = false;
+            // Check if the player has an unused ~
+            for (int k = 0; k < 7; k++) {
+                if(find(checkedIndexes.begin(), checkedIndexes.end(), k) != checkedIndexes.end()) {
+                    cout << "Hand index " << hand[k] << " has already been registered\n";
+                } else {
+                    if (hand[k] == '~') {
+                        cout << "Found " << word[i] << " in hand as a blank\n";
+                        checkedIndexes.push_back(k);
+                        blankFound = true;
+                        break;
+                    }
+                }
+            }
+            if (!blankFound) {
+                cout << "No blank was found for " << word[i] << endl;
+                return false;
+            }
+        }
+    }
+
+   
+
+    vector<char> existingLetters;
+    for(int i = 0; i < word.length(); i++){
+        existingLetters.push_back(g->gBoard(row, col));
+
+        row += dRow;
+        col += dCol;
+    }
+
+    for (int i = 0; i < existingLetters.size(); i++) {
+        cout << "BBBB " << existingLetters[i] << endl;
+    }
+
+    cout << checkedIndexes.size() << endl;
+    for (int i = 0; i < checkedIndexes.size(); i++) {
+        cout << "Checking letter " << checkedIndexes[i] << endl;
+        int index = checkedIndexes[i];
+        letter = hand[checkedIndexes[i]];
+        if(find(existingLetters.begin(), existingLetters.end(), letter) != existingLetters.end()) {
+            cout << "The letter " << letter << " already is on the board " << endl;
+        } else {
+            cout << "Replacing letter " << hand[index];
+            hand[index] = g->drawBag();
+            cout << " with " << hand[index] << endl;
+        }
+    }
+    
+
+    return true;
+
     for(int i = 0; i < word.length(); i++){
         if(g->gBoard(row, col) != empty){
             cout << "Letter " << word[i] << "already placed" << endl;
