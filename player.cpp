@@ -79,6 +79,7 @@ bool Player::playMove(string word, coord start, char dir){
     else return false;
 }
 
+//Function changeHand (Nick Wood)
 bool Player::changeHand(string word, coord start, char dir){
     bool found = false;
     int dRow, dCol, row = start.row, col = start.col, wildCardLoc = -1;
