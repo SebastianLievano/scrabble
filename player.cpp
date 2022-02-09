@@ -169,37 +169,6 @@ bool Player::changeHand(string word, coord start, char dir){
 
     return true;
 
-    for(int i = 0; i < word.length(); i++){
-        if(g->gBoard(row, col) != empty){
-            cout << "Letter " << word[i] << "already placed" << endl;
-            i++;
-        }
-        for(int j = 0; j < 7; j++){
-            found = false;
-            if(hand[j] == word[i]){
-                changedIndexes.push_back(j);
-                found = true;
-                break;
-            }
-            if(hand[j] == '~') wildCardLoc = j;
-        }
-        if(!found && wildCardLoc != -1){
-            changedIndexes.push_back(wildCardLoc);
-            wildCardLoc = -1;
-            cout << "Using wildcard tile for letter " << word[i] << endl;
-        }
-        else if(!found){
-            return false;
-        }
-        row += dRow;
-        col += dCol;
-    }
-    for(int i = 0; i < changedIndexes.size(); ++i){
-        cout << "Replacing letter " << hand[changedIndexes[i]];
-        hand[changedIndexes[i]] = g-> drawBag();
-        cout << " with " << hand[changedIndexes[i]] << endl;
-    }
-    return true;
 }
 
 
